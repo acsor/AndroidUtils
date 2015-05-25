@@ -48,9 +48,4 @@ public abstract class EnhancedSQLiteOpenHelper extends SQLiteOpenHelper {
         reader.close();
     }
 
-    @Override
-    public void onUpgrade (SQLiteDatabase db, int oldVersion, int newVersion) {
-
-    }
-
 }
