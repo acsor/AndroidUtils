@@ -1,9 +1,10 @@
 ### ---------
-### Home-made
+### Custom
 ### ---------
 
 gen/
 out/
+res/layout/test.xml
 *.sw[po]
 *~
 

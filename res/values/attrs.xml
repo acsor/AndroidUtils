@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="FlowLayout">
+        <attr name="lineHeight" format="dimension">
+            <enum name="match_highest" value="-1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="FlowLayout_Layout">
+
+    </declare-styleable>
+
+</resources>
