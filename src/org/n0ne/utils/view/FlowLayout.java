@@ -9,6 +9,7 @@ import org.n0ne.utils.R;
 
 /**
  * TO-DO Fix padding, margin and the like measurements.
+ * TO-DO Add gravity properties.
  */
 public class FlowLayout extends ViewGroup {
 
@@ -59,8 +60,9 @@ public class FlowLayout extends ViewGroup {
      */
     @Override
     protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
-        final int decWidth = MeasureSpec.getSize(widthMeasureSpec),
-                decHeight = MeasureSpec.getSize(heightMeasureSpec);
+        final int decWidth = MeasureSpec.getSize(widthMeasureSpec);
+        final int childCount = getChildCount();
+        int finalWidth, finalHeight;
 
         int currX = 0, currY = 0;
 
@@ -70,15 +72,7 @@ public class FlowLayout extends ViewGroup {
         View currChild;
         LayoutParams childParams;
 
-        /**
-         * Currently don't know which value decWidth and decHeight get set to
-         * when MeasureSpec.getMode() returns UNSPECIFIED.
-         * Just handling cases in which the mode is EXACTLY or AT_MOST.
-         * TO-DO Include UNSPECIFIED as well.
-         */
-
-        // TO-DO Check how many times getChildCount() gets called.
-        for (int i = 0; i < getChildCount(); i++) {
+        for (int i = 0; i < childCount; i++) {
             currChild = getChildAt(i);
 
             measureChild(currChild, widthMeasureSpec, heightMeasureSpec);
@@ -86,10 +80,11 @@ public class FlowLayout extends ViewGroup {
 
             maxHeightInLine = Math.max(maxHeightInLine, measureEffectiveChildHeight(currChild));
 
+            // Advancing next line.
             if ((currX + measureEffectiveChildWidth(currChild) > decWidth)) {
                 currX = 0;
                 currY = getNextLineY(currY, maxHeightInLine);
-            } else {
+                maxHeightInLine = measureEffectiveChildHeight(currChild);
             }
 
             childParams.x = currX;
@@ -99,9 +94,12 @@ public class FlowLayout extends ViewGroup {
             maxXInLayout = Math.max(maxXInLayout, currX);
         }
 
+        finalWidth = maxXInLayout + getPaddingLeft() + getPaddingRight();
+        finalHeight = getNextLineY(currY, maxHeightInLine) + getPaddingTop() + getPaddingBottom();
+
         setMeasuredDimension(
-                resolveSize(maxXInLayout, widthMeasureSpec),
-                resolveSize(getNextLineY(currY, maxHeightInLine), heightMeasureSpec)
+                resolveSize(finalWidth, widthMeasureSpec),
+                resolveSize(finalHeight, heightMeasureSpec)
         );
     }
 
@@ -115,10 +113,10 @@ public class FlowLayout extends ViewGroup {
             childParams = (LayoutParams) currChild.getLayoutParams();
 
             currChild.layout(
-                    childParams.x,
-                    childParams.y,
-                    childParams.x + currChild.getMeasuredWidth(),
-                    childParams.y + currChild.getMeasuredHeight()
+                     getPaddingLeft() + childParams.x,
+                     getPaddingTop() + childParams.y,
+                     childParams.x + currChild.getMeasuredWidth() + getPaddingRight(),
+                     childParams.y + currChild.getMeasuredHeight() + getPaddingBottom()
             );
         }
     }
@@ -144,15 +142,13 @@ public class FlowLayout extends ViewGroup {
     }
 
     private int measureEffectiveChildWidth (View child) {
-        return child.getPaddingLeft() +
-                child.getMeasuredWidth() +
-                child.getPaddingRight();
+        final LayoutParams childParams = (LayoutParams) child.getLayoutParams();
+        return  child.getMeasuredWidth() + childParams.rightMargin + childParams.leftMargin;
     }
 
     private int measureEffectiveChildHeight (View child) {
-        return child.getPaddingTop() +
-                child.getMeasuredHeight() +
-                child.getPaddingBottom();
+        final LayoutParams childParams = (LayoutParams) child.getLayoutParams();
+        return child.getMeasuredHeight() + childParams.topMargin + childParams.bottomMargin;
     }
 
     private int getNextLineY (int currLineY, int maxHeightInPreviousLine) {
