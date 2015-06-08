@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import org.n0ne.utils.R;
 
 /**
- * TO-DO Fix padding, margin and the like measurements.
  * TO-DO Add gravity properties.
  */
 public class FlowLayout extends ViewGroup {
@@ -53,11 +52,6 @@ public class FlowLayout extends ViewGroup {
         }
     }
 
-    /**
-     * TO-DO Check layout algorithm.
-     * @param widthMeasureSpec
-     * @param heightMeasureSpec
-     */
     @Override
     protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
         final int decWidth = MeasureSpec.getSize(widthMeasureSpec);
@@ -81,7 +75,7 @@ public class FlowLayout extends ViewGroup {
             maxHeightInLine = Math.max(maxHeightInLine, measureEffectiveChildHeight(currChild));
 
             // Advancing next line.
-            if ((currX + measureEffectiveChildWidth(currChild) > decWidth)) {
+            if ((currX + measureEffectiveChildWidth(currChild)) > decWidth) {
                 currX = 0;
                 currY = getNextLineY(currY, maxHeightInLine);
                 maxHeightInLine = measureEffectiveChildHeight(currChild);
@@ -113,10 +107,10 @@ public class FlowLayout extends ViewGroup {
             childParams = (LayoutParams) currChild.getLayoutParams();
 
             currChild.layout(
-                     getPaddingLeft() + childParams.x,
-                     getPaddingTop() + childParams.y,
-                     childParams.x + currChild.getMeasuredWidth() + getPaddingRight(),
-                     childParams.y + currChild.getMeasuredHeight() + getPaddingBottom()
+                     childParams.x + getPaddingLeft() + childParams.leftMargin,
+                     childParams.y + getPaddingTop() + childParams.topMargin,
+                     childParams.x + currChild.getMeasuredWidth() + getPaddingRight() + childParams.rightMargin,
+                     childParams.y + currChild.getMeasuredHeight() + getPaddingBottom() + childParams.bottomMargin
             );
         }
     }
